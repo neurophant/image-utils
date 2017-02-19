@@ -7,7 +7,7 @@ readme = "README.md"
 repository = "https://github.com/embali/image-utils/"
 homepage = "https://github.com/embali/image-utils/"
 description = """Image processing utilities"""
-exclude = ["tests/*.jpg", "tests/*.gif"]
+exclude = ["tests/images"]
 
 [dependencies]
 image = "0.12.3"

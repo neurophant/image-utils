@@ -23,6 +23,21 @@ fn main() {
 }
 ```
 
+### Crop image
+
+```rust
+extern crate image_utils;
+
+use std::path::Path;
+use image_utils::crop;
+
+
+fn main() {
+    let success = crop(&Path::new("test.jpg"), 10, 10, 100, 100, &Path::new("cropped.jpg")).unwrap();
+    println!("{:?}", success);
+}
+```
+
 
 ## Run tests
 

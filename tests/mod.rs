@@ -5,18 +5,124 @@ extern crate image_utils;
 
 use std::path::Path;
 use image::ImageFormat;
-use image_utils::{info, Info};
+use image_utils::{info, Info, crop};
 
 
 #[test]
 fn test_info_jpg() {
-    let inf = info(&Path::new("./tests/test.jpg")).unwrap();
-    assert_eq!(inf, Info {format: ImageFormat::JPEG, width: 510, height: 350, frames: 1});
+    let inf = info(&Path::new("./tests/images/test.jpg")).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   width: 510,
+                   height: 350,
+                   frames: 1,
+               });
 }
 
 
 #[test]
 fn test_info_gif() {
-    let inf = info(&Path::new("./tests/test.gif")).unwrap();
-    assert_eq!(inf, Info {format: ImageFormat::GIF, width: 500, height: 265, frames: 12});
+    let inf = info(&Path::new("./tests/images/test.gif")).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   width: 500,
+                   height: 265,
+                   frames: 12,
+               });
+}
+
+
+#[test]
+fn test_crop_jpg() {
+    let dest = Path::new("./tests/images/cropped.jpg");
+    assert!(crop(&Path::new("./tests/images/test.jpg"),
+                 10,
+                 10,
+                 100,
+                 100,
+                 &dest)
+        .unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   width: 100,
+                   height: 100,
+                   frames: 1,
+               });
+}
+
+
+#[test]
+fn test_crop_gif() {
+    let dest = Path::new("./tests/images/cropped.gif");
+    assert!(crop(&Path::new("./tests/images/test.gif"),
+                 10,
+                 10,
+                 100,
+                 100,
+                 &dest)
+        .unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   width: 100,
+                   height: 100,
+                   frames: 12,
+               });
+}
+
+
+#[test]
+#[should_panic]
+fn test_crop_jpg_x() {
+    crop(&Path::new("./tests/images/test.jpg"),
+         10,
+         10,
+         1000,
+         100,
+         &Path::new("./tests/images/cropped.jpg"))
+        .unwrap();
+}
+
+
+#[test]
+#[should_panic]
+fn test_crop_jpg_y() {
+    crop(&Path::new("./tests/images/test.jpg"),
+         10,
+         10,
+         100,
+         1000,
+         &Path::new("./tests/images/cropped.jpg"))
+        .unwrap();
+}
+
+
+#[test]
+#[should_panic]
+fn test_crop_gif_x() {
+    crop(&Path::new("./tests/images/test.gif"),
+         10,
+         10,
+         1000,
+         100,
+         &Path::new("./tests/images/cropped.gif"))
+        .unwrap();
+}
+
+
+#[test]
+#[should_panic]
+fn test_crop_gif_y() {
+    crop(&Path::new("./tests/images/test.gif"),
+         10,
+         10,
+         100,
+         1000,
+         &Path::new("./tests/images/cropped.gif"))
+        .unwrap();
 }

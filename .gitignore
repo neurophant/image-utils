@@ -1,2 +1,4 @@
 target
 Cargo.lock
+tests/images/cropped.*
+tests/images/resized.*

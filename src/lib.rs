@@ -1,6 +1,7 @@
 extern crate image;
 extern crate gif;
 
+use std::process::Command;
 use std::error::Error;
 use std::path::Path;
 use std::fs::File;
@@ -40,5 +41,48 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
         _ => 1,
     };
 
-    Ok(Info {format: format, width: width, height: height, frames: frames})
+    Ok(Info {
+        format: format,
+        width: width,
+        height: height,
+        frames: frames,
+    })
+}
+
+
+pub fn crop(src: &Path,
+            x: u32,
+            y: u32,
+            width: u32,
+            height: u32,
+            dest: &Path)
+            -> Result<bool, Box<Error>> {
+    let inf = info(src)?;
+
+    if x + width > inf.width || y + height > inf.height {
+        panic!("out of existing image bounds");
+    }
+
+    let cmd = match inf.format {
+        ImageFormat::GIF => {
+            Command::new("convert").arg(src.to_str().unwrap())
+                .arg("-coalesce")
+                .arg("-repage")
+                .arg("0x0")
+                .arg("-crop")
+                .arg(format!("{}x{}+{}+{}", width, height, x, y))
+                .arg("+repage")
+                .arg(dest.to_str().unwrap())
+                .output()?
+        }
+        _ => {
+            Command::new("convert").arg(src.to_str().unwrap())
+                .arg("-crop")
+                .arg(format!("{}x{}+{}+{}", width, height, x, y))
+                .arg(dest.to_str().unwrap())
+                .output()?
+        }
+    };
+
+    Ok(cmd.status.success())
 }
