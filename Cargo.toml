@@ -1,0 +1,14 @@
+[package]
+name = "image-utils"
+version = "0.1.0"
+authors = ["Anton Smolin"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/embali/image-utils/"
+homepage = "https://github.com/embali/image-utils/"
+description = """Image processing utilities"""
+exclude = ["tests/*.jpg", "tests/*.gif"]
+
+[dependencies]
+image = "0.12.3"
+gif = "0.9.0"
