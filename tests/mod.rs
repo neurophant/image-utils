@@ -5,7 +5,7 @@ extern crate image_utils;
 
 use std::path::Path;
 use image::ImageFormat;
-use image_utils::{info, Info, crop};
+use image_utils::{info, Info, crop, resize};
 
 
 #[test]
@@ -125,4 +125,34 @@ fn test_crop_gif_y() {
          1000,
          &Path::new("./tests/images/cropped.gif"))
         .unwrap();
+}
+
+
+#[test]
+fn test_resize_jpg() {
+    let dest = Path::new("./tests/images/resized.jpg");
+    assert!(resize(&Path::new("./tests/images/test.jpg"), 200, 200, &dest).unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   width: 200,
+                   height: 137,
+                   frames: 1,
+               });
+}
+
+
+#[test]
+fn test_resize_gif() {
+    let dest = Path::new("./tests/images/resized.gif");
+    assert!(resize(&Path::new("./tests/images/test.gif"), 200, 200, &dest).unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   width: 200,
+                   height: 106,
+                   frames: 12,
+               });
 }

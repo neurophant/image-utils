@@ -4,6 +4,7 @@ extern crate gif;
 use std::process::Command;
 use std::error::Error;
 use std::path::Path;
+use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use image::{GenericImage, ImageFormat, guess_format};
@@ -63,26 +64,66 @@ pub fn crop(src: &Path,
         panic!("out of existing image bounds");
     }
 
+    let srcs = src.to_str().unwrap();
+    let dests = dest.to_str().unwrap();
+    let dims = format!("{}x{}+{}+{}", width, height, x, y);
+
     let cmd = match inf.format {
         ImageFormat::GIF => {
-            Command::new("convert").arg(src.to_str().unwrap())
+            Command::new("convert").arg(srcs)
                 .arg("-coalesce")
                 .arg("-repage")
                 .arg("0x0")
                 .arg("-crop")
-                .arg(format!("{}x{}+{}+{}", width, height, x, y))
+                .arg(dims)
                 .arg("+repage")
-                .arg(dest.to_str().unwrap())
+                .arg(dests)
                 .output()?
         }
         _ => {
-            Command::new("convert").arg(src.to_str().unwrap())
+            Command::new("convert").arg(srcs)
                 .arg("-crop")
-                .arg(format!("{}x{}+{}+{}", width, height, x, y))
-                .arg(dest.to_str().unwrap())
+                .arg(dims)
+                .arg(dests)
                 .output()?
         }
     };
 
     Ok(cmd.status.success())
+}
+
+
+pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<bool, Box<Error>> {
+    let inf = info(src)?;
+
+    let dests = dest.to_str().unwrap();
+
+    let temp = match inf.format {
+        ImageFormat::GIF => {
+            let cmd = Command::new("convert").arg(src.to_str().unwrap())
+                .arg("-coalesce")
+                .arg(dests)
+                .output()?;
+
+            cmd.status.success()
+        }
+        _ => false,
+    };
+
+    let success = Command::new("convert")
+        .arg("-size")
+        .arg(format!("{}x{}", inf.width, inf.height))
+        .arg(dests)
+        .arg("-resize")
+        .arg(format!("{}x{}", width, height))
+        .arg(dests)
+        .output()?
+        .status
+        .success();
+
+    if temp && !success {
+        fs::remove_file(dests)?;
+    }
+
+    Ok(success)
 }
