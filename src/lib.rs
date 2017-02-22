@@ -96,14 +96,17 @@ pub fn crop(src: &Path,
 pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<bool, Box<Error>> {
     let inf = info(src)?;
 
+    let mut srcs = src.to_str().unwrap();
     let dests = dest.to_str().unwrap();
 
     let temp = match inf.format {
         ImageFormat::GIF => {
-            let cmd = Command::new("convert").arg(src.to_str().unwrap())
+            let cmd = Command::new("convert").arg(srcs)
                 .arg("-coalesce")
                 .arg(dests)
                 .output()?;
+
+            srcs = dests;
 
             cmd.status.success()
         }
@@ -113,7 +116,7 @@ pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<bool, 
     let success = Command::new("convert")
         .arg("-size")
         .arg(format!("{}x{}", inf.width, inf.height))
-        .arg(dests)
+        .arg(srcs)
         .arg("-resize")
         .arg(format!("{}x{}", width, height))
         .arg(dests)
