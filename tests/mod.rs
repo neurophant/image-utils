@@ -42,7 +42,8 @@ fn test_crop_jpg() {
                  10,
                  100,
                  100,
-                 &dest)
+                 &dest,
+                 10)
         .unwrap());
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -63,7 +64,8 @@ fn test_crop_gif() {
                  10,
                  100,
                  100,
-                 &dest)
+                 &dest,
+                 10)
         .unwrap());
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -84,7 +86,8 @@ fn test_crop_jpg_x() {
          10,
          1000,
          100,
-         &Path::new("./tests/images/cropped.jpg"))
+         &Path::new("./tests/images/cropped.jpg"),
+         10)
         .unwrap();
 }
 
@@ -97,7 +100,8 @@ fn test_crop_jpg_y() {
          10,
          100,
          1000,
-         &Path::new("./tests/images/cropped.jpg"))
+         &Path::new("./tests/images/cropped.jpg"),
+         10)
         .unwrap();
 }
 
@@ -110,7 +114,8 @@ fn test_crop_gif_x() {
          10,
          1000,
          100,
-         &Path::new("./tests/images/cropped.gif"))
+         &Path::new("./tests/images/cropped.gif"),
+         10)
         .unwrap();
 }
 
@@ -123,7 +128,8 @@ fn test_crop_gif_y() {
          10,
          100,
          1000,
-         &Path::new("./tests/images/cropped.gif"))
+         &Path::new("./tests/images/cropped.gif"),
+         10)
         .unwrap();
 }
 

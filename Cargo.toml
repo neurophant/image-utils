@@ -6,9 +6,11 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/embali/image-utils/"
 homepage = "https://github.com/embali/image-utils/"
+documentation = "https://docs.rs/image-utils/"
 description = """Image processing utilities"""
 exclude = ["tests/images"]
 
 [dependencies]
 image = "0.12.3"
 gif = "0.9.0"
+wait-timeout = "0.1.4"

@@ -1,5 +1,6 @@
 extern crate image;
 extern crate gif;
+extern crate wait_timeout;
 
 use std::process::Command;
 use std::error::Error;
@@ -7,8 +8,10 @@ use std::path::Path;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
+use std::time::Duration;
 use image::{GenericImage, ImageFormat, guess_format};
 use gif::Decoder;
+use wait_timeout::ChildExt;
 
 
 #[derive(Debug, PartialEq)]
@@ -56,7 +59,8 @@ pub fn crop(src: &Path,
             y: u32,
             width: u32,
             height: u32,
-            dest: &Path)
+            dest: &Path,
+            timeout: u32)
             -> Result<bool, Box<Error>> {
     let inf = info(src)?;
 
@@ -68,7 +72,7 @@ pub fn crop(src: &Path,
     let dests = dest.to_str().unwrap();
     let dims = format!("{}x{}+{}+{}", width, height, x, y);
 
-    let cmd = match inf.format {
+    let mut child = match inf.format {
         ImageFormat::GIF => {
             Command::new("convert").arg(srcs)
                 .arg("-coalesce")
@@ -78,18 +82,26 @@ pub fn crop(src: &Path,
                 .arg(dims)
                 .arg("+repage")
                 .arg(dests)
-                .output()?
+                .spawn()?
         }
         _ => {
             Command::new("convert").arg(srcs)
                 .arg("-crop")
                 .arg(dims)
                 .arg(dests)
-                .output()?
+                .spawn()?
         }
     };
 
-    Ok(cmd.status.success())
+    let success = match child.wait_timeout(Duration::from_secs(timeout as u64))? {
+        Some(status) => status.success(),
+        None => {
+            child.kill()?;
+            child.wait()?.success()
+        }
+    };
+
+    Ok(success)
 }
 
 
