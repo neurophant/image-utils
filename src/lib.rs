@@ -1,3 +1,27 @@
+//! A crate to get images info and process them.
+//!
+//! Requires ImageMagick installed to function properly since some functions uses its command line
+//! tools.
+//!
+//! # Example
+//!
+//! ```no_run
+//! extern crate image_utils;
+//!
+//! use std::path::Path;
+//! use image_utils::{info, crop, resize};
+//!
+//! let path = Path::new("test.jpg");
+//!
+//! let inf = info(&path)?;
+//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"), 10)?;
+//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"), 10)?;
+//!
+//! println!("{:?} {:?} {:?}", inf, cropped, resized);
+//! ```
+
+#![deny(missing_docs)]
+
 extern crate image;
 extern crate gif;
 extern crate wait_timeout;
@@ -13,7 +37,7 @@ use image::{GenericImage, ImageFormat, guess_format};
 use gif::Decoder;
 use wait_timeout::ChildExt;
 
-
+/// info function result
 #[derive(Debug, PartialEq)]
 pub struct Info {
     pub format: ImageFormat,
@@ -22,7 +46,7 @@ pub struct Info {
     pub frames: u32,
 }
 
-
+/// Returns basic information about image
 pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let mut im = File::open(path)?;
     let mut buf = [0; 16];
@@ -53,7 +77,8 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     })
 }
 
-
+/// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing image,
+/// fails if timeout exceeded
 pub fn crop(src: &Path,
             x: u32,
             y: u32,
@@ -104,7 +129,7 @@ pub fn crop(src: &Path,
     Ok(success)
 }
 
-
+/// Resizes image preserving its aspect ratio, fails if timeout exceeded
 pub fn resize(src: &Path,
               width: u32,
               height: u32,

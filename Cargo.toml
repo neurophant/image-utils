@@ -12,6 +12,9 @@ keywords = ["image", "utils"]
 categories = ["multimedia::images"]
 exclude = ["tests/images"]
 
+[badges]
+travis-ci = { repository = "embali/image-utils" }
+
 [dependencies]
 image = "0.12.3"
 gif = "0.9.0"
