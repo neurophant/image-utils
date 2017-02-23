@@ -7,7 +7,6 @@ use std::path::Path;
 use image::ImageFormat;
 use image_utils::{info, Info, crop, resize};
 
-
 #[test]
 fn test_info_jpg() {
     let inf = info(&Path::new("./tests/images/test.jpg")).unwrap();
@@ -20,7 +19,6 @@ fn test_info_jpg() {
                });
 }
 
-
 #[test]
 fn test_info_gif() {
     let inf = info(&Path::new("./tests/images/test.gif")).unwrap();
@@ -32,7 +30,6 @@ fn test_info_gif() {
                    frames: 12,
                });
 }
-
 
 #[test]
 fn test_crop_jpg() {
@@ -55,7 +52,6 @@ fn test_crop_jpg() {
                });
 }
 
-
 #[test]
 fn test_crop_gif() {
     let dest = Path::new("./tests/images/cropped.gif");
@@ -77,7 +73,6 @@ fn test_crop_gif() {
                });
 }
 
-
 #[test]
 #[should_panic]
 fn test_crop_jpg_x() {
@@ -90,7 +85,6 @@ fn test_crop_jpg_x() {
          10)
         .unwrap();
 }
-
 
 #[test]
 #[should_panic]
@@ -105,7 +99,6 @@ fn test_crop_jpg_y() {
         .unwrap();
 }
 
-
 #[test]
 #[should_panic]
 fn test_crop_gif_x() {
@@ -118,7 +111,6 @@ fn test_crop_gif_x() {
          10)
         .unwrap();
 }
-
 
 #[test]
 #[should_panic]
@@ -133,7 +125,6 @@ fn test_crop_gif_y() {
         .unwrap();
 }
 
-
 #[test]
 fn test_resize_jpg() {
     let dest = Path::new("./tests/images/resized.jpg");
@@ -147,7 +138,6 @@ fn test_resize_jpg() {
                    frames: 1,
                });
 }
-
 
 #[test]
 fn test_resize_gif() {

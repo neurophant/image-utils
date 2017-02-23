@@ -5,7 +5,7 @@
 //!
 //! # Example
 //!
-//! ```no_run
+//! ```rust,ignore
 //! extern crate image_utils;
 //!
 //! use std::path::Path;
@@ -14,8 +14,8 @@
 //! let path = Path::new("test.jpg");
 //!
 //! let inf = info(&path)?;
-//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"), 10)?;
-//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"), 10)?;
+//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"), 5)?;
+//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"), 5)?;
 //!
 //! println!("{:?} {:?} {:?}", inf, cropped, resized);
 //! ```
@@ -40,13 +40,17 @@ use wait_timeout::ChildExt;
 /// info function result
 #[derive(Debug, PartialEq)]
 pub struct Info {
+    /// Image format
     pub format: ImageFormat,
+    /// Width in pixels
     pub width: u32,
+    /// Height in pixels
     pub height: u32,
+    /// Number of frames, can be greater than 1 for animated GIFs
     pub frames: u32,
 }
 
-/// Returns basic information about image
+/// Returns common information about image
 pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let mut im = File::open(path)?;
     let mut buf = [0; 16];

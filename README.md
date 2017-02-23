@@ -8,6 +8,11 @@ Image processing utilities
 Requires ImageMagick installed
 
 
+## Documentation
+
+https://docs.rs/image-utils/
+
+
 ## Functions
 
 ### Image information
@@ -17,7 +22,6 @@ extern crate image_utils;
 
 use std::path::Path;
 use image_utils::info;
-
 
 fn main() {
     let inf = info(&Path::new("test.jpg")).unwrap();
@@ -33,9 +37,8 @@ extern crate image_utils;
 use std::path::Path;
 use image_utils::crop;
 
-
 fn main() {
-    let success = crop(&Path::new("test.jpg"), 10, 10, 100, 100, &Path::new("cropped.jpg")).unwrap();
+    let success = crop(&Path::new("test.jpg"), 10, 10, 100, 100, &Path::new("cropped.jpg"), 5).unwrap();
     println!("{:?}", success);
 }
 ```
@@ -48,9 +51,8 @@ extern crate image_utils;
 use std::path::Path;
 use image_utils::resize;
 
-
 fn main() {
-    let success = resize(&Path::new("test.jpg"), 200, 200, &Path::new("resized.jpg")).unwrap();
+    let success = resize(&Path::new("test.jpg"), 200, 200, &Path::new("resized.jpg"), 5).unwrap();
     println!("{:?}", success);
 }
 ```
