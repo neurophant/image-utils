@@ -137,7 +137,7 @@ fn test_crop_gif_y() {
 #[test]
 fn test_resize_jpg() {
     let dest = Path::new("./tests/images/resized.jpg");
-    assert!(resize(&Path::new("./tests/images/test.jpg"), 200, 200, &dest).unwrap());
+    assert!(resize(&Path::new("./tests/images/test.jpg"), 200, 200, &dest, 10).unwrap());
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
                Info {
@@ -152,7 +152,7 @@ fn test_resize_jpg() {
 #[test]
 fn test_resize_gif() {
     let dest = Path::new("./tests/images/resized.gif");
-    assert!(resize(&Path::new("./tests/images/test.gif"), 200, 200, &dest).unwrap());
+    assert!(resize(&Path::new("./tests/images/test.gif"), 200, 200, &dest, 10).unwrap());
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
                Info {

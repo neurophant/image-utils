@@ -105,36 +105,54 @@ pub fn crop(src: &Path,
 }
 
 
-pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<bool, Box<Error>> {
+pub fn resize(src: &Path,
+              width: u32,
+              height: u32,
+              dest: &Path,
+              timeout: u32)
+              -> Result<bool, Box<Error>> {
     let inf = info(src)?;
 
     let mut srcs = src.to_str().unwrap();
     let dests = dest.to_str().unwrap();
 
+    let duration = Duration::from_secs(timeout as u64);
+
     let temp = match inf.format {
         ImageFormat::GIF => {
-            let cmd = Command::new("convert").arg(srcs)
+            let mut child = Command::new("convert").arg(srcs)
                 .arg("-coalesce")
                 .arg(dests)
-                .output()?;
+                .spawn()?;
 
             srcs = dests;
 
-            cmd.status.success()
+            match child.wait_timeout(duration)? {
+                Some(status) => status.success(),
+                None => {
+                    child.kill()?;
+                    child.wait()?.success()
+                }
+            }
         }
         _ => false,
     };
 
-    let success = Command::new("convert")
-        .arg("-size")
+    let mut child = Command::new("convert").arg("-size")
         .arg(format!("{}x{}", inf.width, inf.height))
         .arg(srcs)
         .arg("-resize")
         .arg(format!("{}x{}", width, height))
         .arg(dests)
-        .output()?
-        .status
-        .success();
+        .spawn()?;
+
+    let success = match child.wait_timeout(duration)? {
+        Some(status) => status.success(),
+        None => {
+            child.kill()?;
+            child.wait()?.success()
+        }
+    };
 
     if temp && !success {
         fs::remove_file(dests)?;
