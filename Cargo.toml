@@ -1,6 +1,6 @@
 [package]
 name = "image-utils"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Anton Smolin"]
 license = "MIT"
 readme = "README.md"
@@ -8,6 +8,8 @@ repository = "https://github.com/embali/image-utils/"
 homepage = "https://github.com/embali/image-utils/"
 documentation = "https://docs.rs/image-utils/"
 description = """Image processing utilities"""
+keywords = ["image", "utils"]
+categories = ["multimedia::images"]
 exclude = ["tests/images"]
 
 [dependencies]
