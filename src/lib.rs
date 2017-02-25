@@ -1,4 +1,4 @@
-//! A crate to get images info and process them.
+//! A crate to get images info and process them, including animated GIFs.
 //!
 //! Requires ImageMagick installed to function properly since some functions uses its command line
 //! tools.
@@ -33,15 +33,17 @@ use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use std::time::Duration;
-use image::{GenericImage, ImageFormat, guess_format};
+use image::{GenericImage, ImageFormat, ColorType, guess_format};
 use gif::Decoder;
 use wait_timeout::ChildExt;
 
-/// info function result
+/// Common image information
 #[derive(Debug, PartialEq)]
 pub struct Info {
     /// Image format
     pub format: ImageFormat,
+    /// Image color type
+    pub type: ColorType,
     /// Width in pixels
     pub width: u32,
     /// Height in pixels
@@ -51,6 +53,8 @@ pub struct Info {
 }
 
 /// Returns common information about image
+///
+/// `path` - image file to analyze
 pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let mut im = File::open(path)?;
     let mut buf = [0; 16];
@@ -58,6 +62,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let format = guess_format(&buf)?;
 
     let im = image::open(path)?;
+    let type = im.color();
     let (width, height) = im.dimensions();
 
     let frames = match format {
@@ -75,6 +80,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 
     Ok(Info {
         format: format,
+        type: type,
         width: width,
         height: height,
         frames: frames,
@@ -83,6 +89,20 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 
 /// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing image,
 /// fails if timeout exceeded
+///
+/// `src` - source image file
+///
+/// `x` - width offset
+///
+/// `y` - height offset
+///
+/// `width` - crop width
+///
+/// `height` - crop height
+///
+/// `dest` - destination image file
+///
+/// `timeout` - function timeout in seconds
 pub fn crop(src: &Path,
             x: u32,
             y: u32,
@@ -134,6 +154,16 @@ pub fn crop(src: &Path,
 }
 
 /// Resizes image preserving its aspect ratio, fails if timeout exceeded
+///
+/// `src` - source image file
+///
+/// `width` - max width
+///
+/// `height` - max height
+///
+/// `dest` - destination image file
+///
+/// `timeout` - function timeout in seconds
 pub fn resize(src: &Path,
               width: u32,
               height: u32,
