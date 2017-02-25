@@ -43,7 +43,7 @@ pub struct Info {
     /// Image format
     pub format: ImageFormat,
     /// Image color type
-    pub type: ColorType,
+    pub color: ColorType,
     /// Width in pixels
     pub width: u32,
     /// Height in pixels
@@ -62,7 +62,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let format = guess_format(&buf)?;
 
     let im = image::open(path)?;
-    let type = im.color();
+    let color = im.color();
     let (width, height) = im.dimensions();
 
     let frames = match format {
@@ -80,7 +80,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 
     Ok(Info {
         format: format,
-        type: type,
+        color: color,
         width: width,
         height: height,
         frames: frames,

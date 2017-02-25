@@ -4,7 +4,7 @@ extern crate image;
 extern crate image_utils;
 
 use std::path::Path;
-use image::ImageFormat;
+use image::{ImageFormat, ColorType};
 use image_utils::{info, Info, crop, resize};
 
 #[test]
@@ -13,6 +13,7 @@ fn test_info_jpg() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
                    width: 510,
                    height: 350,
                    frames: 1,
@@ -25,6 +26,7 @@ fn test_info_gif() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
                    width: 500,
                    height: 265,
                    frames: 12,
@@ -46,6 +48,7 @@ fn test_crop_jpg() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
                    width: 100,
                    height: 100,
                    frames: 1,
@@ -67,6 +70,7 @@ fn test_crop_gif() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
                    width: 100,
                    height: 100,
                    frames: 12,
@@ -133,6 +137,7 @@ fn test_resize_jpg() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
                    width: 200,
                    height: 137,
                    frames: 1,
@@ -147,6 +152,7 @@ fn test_resize_gif() {
     assert_eq!(inf,
                Info {
                    format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
                    width: 200,
                    height: 106,
                    frames: 12,
