@@ -55,6 +55,8 @@ pub struct Info {
 /// Returns common information about image
 ///
 /// `path` - image file to analyze
+///
+/// Returns Info struct
 pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     let mut im = File::open(path)?;
     let mut buf = [0; 16];
@@ -87,8 +89,8 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     })
 }
 
-/// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing image,
-/// fails if timeout exceeded
+/// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing
+/// image, fails if timeout exceeded
 ///
 /// `src` - source image file
 ///
@@ -103,6 +105,8 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 /// `dest` - destination image file
 ///
 /// `timeout` - function timeout in seconds
+///
+/// Returns true on success
 pub fn crop(src: &Path,
             x: u32,
             y: u32,
@@ -164,6 +168,8 @@ pub fn crop(src: &Path,
 /// `dest` - destination image file
 ///
 /// `timeout` - function timeout in seconds
+///
+/// Returns true on success
 pub fn resize(src: &Path,
               width: u32,
               height: u32,
