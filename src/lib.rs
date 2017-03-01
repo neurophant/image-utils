@@ -32,6 +32,7 @@ use std::path::Path;
 use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
+use std::io::BufReader;
 use std::time::Duration;
 use image::{GenericImage, ImageFormat, ColorType, guess_format};
 use gif::Decoder;
@@ -58,12 +59,12 @@ pub struct Info {
 ///
 /// Returns Info struct
 pub fn info(path: &Path) -> Result<Info, Box<Error>> {
-    let mut im = File::open(path)?;
+    let mut fp = File::open(path)?;
     let mut buf = [0; 16];
-    im.read(&mut buf)?;
+    fp.read(&mut buf)?;
     let format = guess_format(&buf)?;
 
-    let im = image::open(path)?;
+    let im = image::load(BufReader::new(File::open(path)?), format)?;
     let color = im.color();
     let (width, height) = im.dimensions();
 

@@ -21,8 +21,34 @@ fn test_info_jpg() {
 }
 
 #[test]
+fn test_info_jpg_tmp() {
+    let inf = info(&Path::new("./tests/images/test.jpg.tmp")).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
+                   width: 510,
+                   height: 350,
+                   frames: 1,
+               });
+}
+
+#[test]
 fn test_info_gif() {
     let inf = info(&Path::new("./tests/images/test.gif")).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
+                   width: 500,
+                   height: 265,
+                   frames: 12,
+               });
+}
+
+#[test]
+fn test_info_gif_tmp() {
+    let inf = info(&Path::new("./tests/images/test.gif.tmp")).unwrap();
     assert_eq!(inf,
                Info {
                    format: ImageFormat::GIF,
@@ -56,9 +82,53 @@ fn test_crop_jpg() {
 }
 
 #[test]
+fn test_crop_jpg_tmp() {
+    let dest = Path::new("./tests/images/cropped.jpg.tmp");
+    assert!(crop(&Path::new("./tests/images/test.jpg.tmp"),
+                 10,
+                 10,
+                 100,
+                 100,
+                 &dest,
+                 10)
+        .unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
+                   width: 100,
+                   height: 100,
+                   frames: 1,
+               });
+}
+
+#[test]
 fn test_crop_gif() {
     let dest = Path::new("./tests/images/cropped.gif");
     assert!(crop(&Path::new("./tests/images/test.gif"),
+                 10,
+                 10,
+                 100,
+                 100,
+                 &dest,
+                 10)
+        .unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
+                   width: 100,
+                   height: 100,
+                   frames: 12,
+               });
+}
+
+#[test]
+fn test_crop_gif_tmp() {
+    let dest = Path::new("./tests/images/cropped.gif.tmp");
+    assert!(crop(&Path::new("./tests/images/test.gif.tmp"),
                  10,
                  10,
                  100,
@@ -145,9 +215,39 @@ fn test_resize_jpg() {
 }
 
 #[test]
+fn test_resize_jpg_tmp() {
+    let dest = Path::new("./tests/images/resized.jpg.tmp");
+    assert!(resize(&Path::new("./tests/images/test.jpg.tmp"), 200, 200, &dest, 10).unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::JPEG,
+                   color: ColorType::RGB(8),
+                   width: 200,
+                   height: 137,
+                   frames: 1,
+               });
+}
+
+#[test]
 fn test_resize_gif() {
     let dest = Path::new("./tests/images/resized.gif");
     assert!(resize(&Path::new("./tests/images/test.gif"), 200, 200, &dest, 10).unwrap());
+    let inf = info(&dest).unwrap();
+    assert_eq!(inf,
+               Info {
+                   format: ImageFormat::GIF,
+                   color: ColorType::RGBA(8),
+                   width: 200,
+                   height: 106,
+                   frames: 12,
+               });
+}
+
+#[test]
+fn test_resize_gif_tmp() {
+    let dest = Path::new("./tests/images/resized.gif.tmp");
+    assert!(resize(&Path::new("./tests/images/test.gif.tmp"), 200, 200, &dest, 10).unwrap());
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
                Info {

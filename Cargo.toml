@@ -1,6 +1,6 @@
 [package]
 name = "image-utils"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Anton Smolin"]
 license = "MIT"
 readme = "README.md"
