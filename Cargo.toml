@@ -1,6 +1,6 @@
 [package]
 name = "image-utils"
-version = "0.1.4"
+version = "0.2.0"
 authors = ["Anton Smolin"]
 license = "MIT"
 readme = "README.md"
@@ -18,4 +18,4 @@ travis-ci = { repository = "embali/image-utils" }
 [dependencies]
 image = "0.12.3"
 gif = "0.9.0"
-wait-timeout = "0.1.4"
+gif-dispose = "1.0.0"

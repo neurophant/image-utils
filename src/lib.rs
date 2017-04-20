@@ -14,8 +14,8 @@
 //! let path = Path::new("test.jpg");
 //!
 //! let inf = info(&path)?;
-//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"), 5)?;
-//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"), 5)?;
+//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"))?;
+//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"))?;
 //!
 //! println!("{:?} {:?} {:?}", inf, cropped, resized);
 //! ```
@@ -24,7 +24,7 @@
 
 extern crate image;
 extern crate gif;
-extern crate wait_timeout;
+extern crate gif_dispose;
 
 use std::process::Command;
 use std::error::Error;
@@ -34,9 +34,9 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::time::Duration;
-use image::{GenericImage, ImageFormat, ColorType, guess_format};
-use gif::Decoder;
-use wait_timeout::ChildExt;
+use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, DynamicImage, ImageBuffer, Luma, FilterType, guess_format};
+use gif::{Decoder, SetParameter, ColorOutput, Frame, Encoder, Repeat};
+use gif_dispose::Screen;
 
 /// Common image information
 #[derive(Debug, PartialEq)]
@@ -91,7 +91,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 }
 
 /// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing
-/// image, fails if timeout exceeded
+/// image
 ///
 /// `src` - source image file
 ///
@@ -105,60 +105,60 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 ///
 /// `dest` - destination image file
 ///
-/// `timeout` - function timeout in seconds
-///
 /// Returns true on success
 pub fn crop(src: &Path,
             x: u32,
             y: u32,
             width: u32,
             height: u32,
-            dest: &Path,
-            timeout: u32)
-            -> Result<bool, Box<Error>> {
+            dest: &Path)
+            -> Result<(), Box<Error>> {
     let inf = info(src)?;
 
     if x + width > inf.width || y + height > inf.height {
         panic!("out of existing image bounds");
     }
 
-    let srcs = src.to_str().unwrap();
-    let dests = dest.to_str().unwrap();
-    let dims = format!("{}x{}+{}+{}", width, height, x, y);
-
-    let mut child = match inf.format {
+    match inf.format {
         ImageFormat::GIF => {
-            Command::new("convert").arg(srcs)
-                .arg("-coalesce")
-                .arg("-repage")
-                .arg("0x0")
-                .arg("-crop")
-                .arg(dims)
-                .arg("+repage")
-                .arg(dests)
-                .spawn()?
+            let mut decoder = Decoder::new(File::open(src)?);
+            decoder.set(ColorOutput::Indexed);
+            let mut reader = decoder.read_info().unwrap();
+            let mut screen = Screen::new(&reader);
+            let mut result = File::create(dest)?;
+            let mut encoder = Encoder::new(&mut result, width as u16, height as u16, &[]).unwrap();
+            encoder.set(Repeat::Infinite).unwrap();
+
+            while let Some(frame) = reader.read_next_frame().unwrap() {
+                screen.blit(&frame).unwrap();
+                let mut buf: Vec<u8> = Vec::new();
+                for pixel in screen.pixels.iter() {
+                    buf.push(pixel.r);
+                    buf.push(pixel.g);
+                    buf.push(pixel.b);
+                    buf.push(pixel.a);
+                }
+                let mut im = ImageRgba8(ImageBuffer::from_raw(inf.width, inf.height, buf).unwrap());
+
+                im = im.crop(x, y, width, height);
+                let mut pixels = im.raw_pixels();
+                let mut output = Frame::from_rgba(width as u16, height as u16, &mut *pixels);
+                output.delay = frame.delay;
+                encoder.write_frame(&output).unwrap();
+            }
         }
         _ => {
-            Command::new("convert").arg(srcs)
-                .arg("-crop")
-                .arg(dims)
-                .arg(dests)
-                .spawn()?
+            let mut im = image::load(BufReader::new(File::open(src)?), inf.format)?;
+            im = im.crop(x, y, width, height);
+            let mut output = File::create(dest)?;
+            im.save(&mut output, inf.format)?;
         }
     };
 
-    let success = match child.wait_timeout(Duration::from_secs(timeout as u64))? {
-        Some(status) => status.success(),
-        None => {
-            child.kill()?;
-            child.wait()?.success()
-        }
-    };
-
-    Ok(success)
+    Ok(())
 }
 
-/// Resizes image preserving its aspect ratio, fails if timeout exceeded
+/// Resizes image preserving its aspect ratio
 ///
 /// `src` - source image file
 ///
@@ -168,61 +168,19 @@ pub fn crop(src: &Path,
 ///
 /// `dest` - destination image file
 ///
-/// `timeout` - function timeout in seconds
-///
 /// Returns true on success
 pub fn resize(src: &Path,
               width: u32,
               height: u32,
-              dest: &Path,
-              timeout: u32)
-              -> Result<bool, Box<Error>> {
+              dest: &Path)
+              -> Result<(), Box<Error>> {
     let inf = info(src)?;
 
-    let mut srcs = src.to_str().unwrap();
-    let dests = dest.to_str().unwrap();
-
-    let duration = Duration::from_secs(timeout as u64);
-
-    let temp = match inf.format {
+    match inf.format {
         ImageFormat::GIF => {
-            let mut child = Command::new("convert").arg(srcs)
-                .arg("-coalesce")
-                .arg(dests)
-                .spawn()?;
-
-            srcs = dests;
-
-            match child.wait_timeout(duration)? {
-                Some(status) => status.success(),
-                None => {
-                    child.kill()?;
-                    child.wait()?.success()
-                }
-            }
         }
-        _ => false,
+        _ => {},
     };
 
-    let mut child = Command::new("convert").arg("-size")
-        .arg(format!("{}x{}", inf.width, inf.height))
-        .arg(srcs)
-        .arg("-resize")
-        .arg(format!("{}x{}", width, height))
-        .arg(dests)
-        .spawn()?;
-
-    let success = match child.wait_timeout(duration)? {
-        Some(status) => status.success(),
-        None => {
-            child.kill()?;
-            child.wait()?.success()
-        }
-    };
-
-    if temp && !success {
-        fs::remove_file(dests)?;
-    }
-
-    Ok(success)
+    Ok(())
 }
