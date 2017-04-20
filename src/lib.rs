@@ -102,8 +102,6 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
 /// `height` - crop height
 ///
 /// `dest` - destination image file
-///
-/// Returns true on success
 pub fn crop(src: &Path,
             x: u32,
             y: u32,
@@ -165,8 +163,6 @@ pub fn crop(src: &Path,
 /// `height` - max height
 ///
 /// `dest` - destination image file
-///
-/// Returns true on success
 pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<(), Box<Error>> {
     let inf = info(src)?;
 
