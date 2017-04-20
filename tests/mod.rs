@@ -67,11 +67,11 @@ fn test_info_gif_tmp() {
 fn test_crop_jpg() {
     let dest = Path::new("./tests/images/cropped.jpg");
     crop(&Path::new("./tests/images/test.jpg"),
-                 10,
-                 10,
-                 100,
-                 100,
-                 &dest)
+         10,
+         10,
+         100,
+         100,
+         &dest)
         .unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -89,11 +89,11 @@ fn test_crop_jpg() {
 fn test_crop_jpg_tmp() {
     let dest = Path::new("./tests/images/cropped.jpg.tmp");
     crop(&Path::new("./tests/images/test.jpg.tmp"),
-                 10,
-                 10,
-                 100,
-                 100,
-                 &dest)
+         10,
+         10,
+         100,
+         100,
+         &dest)
         .unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -111,11 +111,11 @@ fn test_crop_jpg_tmp() {
 fn test_crop_gif() {
     let dest = Path::new("./tests/images/cropped.gif");
     crop(&Path::new("./tests/images/test.gif"),
-                 10,
-                 10,
-                 100,
-                 100,
-                 &dest)
+         10,
+         10,
+         100,
+         100,
+         &dest)
         .unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -133,11 +133,11 @@ fn test_crop_gif() {
 fn test_crop_gif_tmp() {
     let dest = Path::new("./tests/images/cropped.gif.tmp");
     crop(&Path::new("./tests/images/test.gif.tmp"),
-                 10,
-                 10,
-                 100,
-                 100,
-                 &dest)
+         10,
+         10,
+         100,
+         100,
+         &dest)
         .unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -218,11 +218,7 @@ fn test_resize_jpg() {
 #[test]
 fn test_resize_jpg_tmp() {
     let dest = Path::new("./tests/images/resized.jpg.tmp");
-    resize(&Path::new("./tests/images/test.jpg.tmp"),
-                   200,
-                   200,
-                   &dest)
-        .unwrap();
+    resize(&Path::new("./tests/images/test.jpg.tmp"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
                Info {
@@ -254,11 +250,7 @@ fn test_resize_gif() {
 #[test]
 fn test_resize_gif_tmp() {
     let dest = Path::new("./tests/images/resized.gif.tmp");
-    resize(&Path::new("./tests/images/test.gif.tmp"),
-                   200,
-                   200,
-                   &dest)
-        .unwrap();
+    resize(&Path::new("./tests/images/test.gif.tmp"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
                Info {

@@ -31,7 +31,8 @@ use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, ImageBuffer, FilterType, guess_format};
+use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, ImageBuffer, FilterType,
+            guess_format};
 use gif::{Decoder, SetParameter, ColorOutput, Frame, Encoder, Repeat};
 use gif_dispose::Screen;
 
@@ -126,11 +127,11 @@ pub fn crop(src: &Path,
             let mut reader = decoder.read_info().unwrap();
             let mut screen = Screen::new(&reader);
             let mut result = File::create(dest)?;
-            let mut encoder = Encoder::new(&mut result, width as u16, height as u16, &[]).unwrap();
-            encoder.set(Repeat::Infinite).unwrap();
+            let mut encoder = Encoder::new(&mut result, width as u16, height as u16, &[])?;
+            encoder.set(Repeat::Infinite)?;
 
             while let Some(frame) = reader.read_next_frame().unwrap() {
-                screen.blit(&frame).unwrap();
+                screen.blit(&frame)?;
                 let mut buf: Vec<u8> = Vec::new();
                 for pixel in screen.pixels.iter() {
                     buf.push(pixel.r);
@@ -144,7 +145,7 @@ pub fn crop(src: &Path,
                 let mut pixels = im.raw_pixels();
                 let mut output = Frame::from_rgba(width as u16, height as u16, &mut *pixels);
                 output.delay = frame.delay;
-                encoder.write_frame(&output).unwrap();
+                encoder.write_frame(&output)?;
             }
         }
         _ => {
@@ -169,11 +170,7 @@ pub fn crop(src: &Path,
 /// `dest` - destination image file
 ///
 /// Returns true on success
-pub fn resize(src: &Path,
-              width: u32,
-              height: u32,
-              dest: &Path)
-              -> Result<(), Box<Error>> {
+pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<(), Box<Error>> {
     let inf = info(src)?;
 
     match inf.format {
@@ -190,14 +187,14 @@ pub fn resize(src: &Path,
             } else {
                 width as f32 / inf.width as f32
             };
-            let nwidth  = (inf.width as f32 * scale) as u32;
+            let nwidth = (inf.width as f32 * scale) as u32;
             let nheight = (inf.height as f32 * scale) as u32;
 
-            let mut encoder = Encoder::new(&mut result, nwidth as u16, nheight as u16, &[]).unwrap();
-            encoder.set(Repeat::Infinite).unwrap();
+            let mut encoder = Encoder::new(&mut result, nwidth as u16, nheight as u16, &[])?;
+            encoder.set(Repeat::Infinite)?;
 
             while let Some(frame) = reader.read_next_frame().unwrap() {
-                screen.blit(&frame).unwrap();
+                screen.blit(&frame)?;
                 let mut buf: Vec<u8> = Vec::new();
                 for pixel in screen.pixels.iter() {
                     buf.push(pixel.r);
@@ -211,7 +208,7 @@ pub fn resize(src: &Path,
                 let mut pixels = im.raw_pixels();
                 let mut output = Frame::from_rgba(nwidth as u16, nheight as u16, &mut *pixels);
                 output.delay = frame.delay;
-                encoder.write_frame(&output).unwrap();
+                encoder.write_frame(&output)?;
             }
         }
         _ => {

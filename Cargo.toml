@@ -18,4 +18,4 @@ travis-ci = { repository = "embali/image-utils" }
 [dependencies]
 image = "0.12.3"
 gif = "0.9.0"
-gif-dispose = "1.0.0"
+gif-dispose = "1.0.1"
