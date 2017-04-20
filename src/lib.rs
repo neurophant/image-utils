@@ -26,15 +26,12 @@ extern crate image;
 extern crate gif;
 extern crate gif_dispose;
 
-use std::process::Command;
 use std::error::Error;
 use std::path::Path;
-use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-use std::time::Duration;
-use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, DynamicImage, ImageBuffer, Luma, FilterType, guess_format};
+use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, ImageBuffer, FilterType, guess_format};
 use gif::{Decoder, SetParameter, ColorOutput, Frame, Encoder, Repeat};
 use gif_dispose::Screen;
 
@@ -49,6 +46,8 @@ pub struct Info {
     pub width: u32,
     /// Height in pixels
     pub height: u32,
+    /// Aspect ratio
+    pub ratio: f32,
     /// Number of frames, can be greater than 1 for animated GIFs
     pub frames: u32,
 }
@@ -86,6 +85,7 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
         color: color,
         width: width,
         height: height,
+        ratio: width as f32 / height as f32,
         frames: frames,
     })
 }
@@ -178,8 +178,48 @@ pub fn resize(src: &Path,
 
     match inf.format {
         ImageFormat::GIF => {
+            let mut decoder = Decoder::new(File::open(src)?);
+            decoder.set(ColorOutput::Indexed);
+            let mut reader = decoder.read_info().unwrap();
+            let mut screen = Screen::new(&reader);
+            let mut result = File::create(dest)?;
+
+            let ratio = width as f32 / height as f32;
+            let scale = if ratio > inf.ratio {
+                height as f32 / inf.height as f32
+            } else {
+                width as f32 / inf.width as f32
+            };
+            let nwidth  = (inf.width as f32 * scale) as u32;
+            let nheight = (inf.height as f32 * scale) as u32;
+
+            let mut encoder = Encoder::new(&mut result, nwidth as u16, nheight as u16, &[]).unwrap();
+            encoder.set(Repeat::Infinite).unwrap();
+
+            while let Some(frame) = reader.read_next_frame().unwrap() {
+                screen.blit(&frame).unwrap();
+                let mut buf: Vec<u8> = Vec::new();
+                for pixel in screen.pixels.iter() {
+                    buf.push(pixel.r);
+                    buf.push(pixel.g);
+                    buf.push(pixel.b);
+                    buf.push(pixel.a);
+                }
+                let mut im = ImageRgba8(ImageBuffer::from_raw(inf.width, inf.height, buf).unwrap());
+
+                im = im.resize(width, height, FilterType::Lanczos3);
+                let mut pixels = im.raw_pixels();
+                let mut output = Frame::from_rgba(nwidth as u16, nheight as u16, &mut *pixels);
+                output.delay = frame.delay;
+                encoder.write_frame(&output).unwrap();
+            }
         }
-        _ => {},
+        _ => {
+            let mut im = image::load(BufReader::new(File::open(src)?), inf.format)?;
+            im = im.resize(width, height, FilterType::Lanczos3);
+            let mut output = File::create(dest)?;
+            im.save(&mut output, inf.format)?;
+        }
     };
 
     Ok(())

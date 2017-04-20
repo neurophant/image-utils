@@ -16,6 +16,7 @@ fn test_info_jpg() {
                    color: ColorType::RGB(8),
                    width: 510,
                    height: 350,
+                   ratio: 510 as f32 / 350 as f32,
                    frames: 1,
                });
 }
@@ -29,6 +30,7 @@ fn test_info_jpg_tmp() {
                    color: ColorType::RGB(8),
                    width: 510,
                    height: 350,
+                   ratio: 510 as f32 / 350 as f32,
                    frames: 1,
                });
 }
@@ -42,6 +44,7 @@ fn test_info_gif() {
                    color: ColorType::RGBA(8),
                    width: 500,
                    height: 265,
+                   ratio: 500 as f32 / 265 as f32,
                    frames: 12,
                });
 }
@@ -55,6 +58,7 @@ fn test_info_gif_tmp() {
                    color: ColorType::RGBA(8),
                    width: 500,
                    height: 265,
+                   ratio: 500 as f32 / 265 as f32,
                    frames: 12,
                });
 }
@@ -76,6 +80,7 @@ fn test_crop_jpg() {
                    color: ColorType::RGB(8),
                    width: 100,
                    height: 100,
+                   ratio: 100 as f32 / 100 as f32,
                    frames: 1,
                });
 }
@@ -97,6 +102,7 @@ fn test_crop_jpg_tmp() {
                    color: ColorType::RGB(8),
                    width: 100,
                    height: 100,
+                   ratio: 100 as f32 / 100 as f32,
                    frames: 1,
                });
 }
@@ -118,6 +124,7 @@ fn test_crop_gif() {
                    color: ColorType::RGBA(8),
                    width: 100,
                    height: 100,
+                   ratio: 100 as f32 / 100 as f32,
                    frames: 12,
                });
 }
@@ -139,6 +146,7 @@ fn test_crop_gif_tmp() {
                    color: ColorType::RGBA(8),
                    width: 100,
                    height: 100,
+                   ratio: 100 as f32 / 100 as f32,
                    frames: 12,
                });
 }
@@ -202,6 +210,7 @@ fn test_resize_jpg() {
                    color: ColorType::RGB(8),
                    width: 200,
                    height: 137,
+                   ratio: 200 as f32 / 137 as f32,
                    frames: 1,
                });
 }
@@ -221,6 +230,7 @@ fn test_resize_jpg_tmp() {
                    color: ColorType::RGB(8),
                    width: 200,
                    height: 137,
+                   ratio: 200 as f32 / 137 as f32,
                    frames: 1,
                });
 }
@@ -236,6 +246,7 @@ fn test_resize_gif() {
                    color: ColorType::RGBA(8),
                    width: 200,
                    height: 106,
+                   ratio: 200 as f32 / 106 as f32,
                    frames: 12,
                });
 }
@@ -255,6 +266,7 @@ fn test_resize_gif_tmp() {
                    color: ColorType::RGBA(8),
                    width: 200,
                    height: 106,
+                   ratio: 200 as f32 / 106 as f32,
                    frames: 12,
                });
 }
