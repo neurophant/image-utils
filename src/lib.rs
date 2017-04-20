@@ -1,8 +1,5 @@
 //! A crate to get images info and process them, including animated GIFs.
 //!
-//! Requires ImageMagick installed to function properly since some functions uses its command line
-//! tools.
-//!
 //! # Example
 //!
 //! ```rust,ignore
