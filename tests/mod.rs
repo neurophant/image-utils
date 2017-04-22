@@ -67,10 +67,9 @@ fn test_info_gif_tmp() {
 #[test]
 fn test_crop_jpg() {
     let dest = Path::new("./tests/images/cropped.jpg");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     crop(&Path::new("./tests/images/test.jpg"),
          10,
          10,
@@ -93,10 +92,9 @@ fn test_crop_jpg() {
 #[test]
 fn test_crop_jpg_tmp() {
     let dest = Path::new("./tests/images/cropped.jpg.tmp");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     crop(&Path::new("./tests/images/test.jpg.tmp"),
          10,
          10,
@@ -119,10 +117,9 @@ fn test_crop_jpg_tmp() {
 #[test]
 fn test_crop_gif() {
     let dest = Path::new("./tests/images/cropped.gif");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     crop(&Path::new("./tests/images/test.gif"),
          10,
          10,
@@ -145,10 +142,9 @@ fn test_crop_gif() {
 #[test]
 fn test_crop_gif_tmp() {
     let dest = Path::new("./tests/images/cropped.gif.tmp");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     crop(&Path::new("./tests/images/test.gif.tmp"),
          10,
          10,
@@ -219,10 +215,9 @@ fn test_crop_gif_y() {
 #[test]
 fn test_resize_jpg() {
     let dest = Path::new("./tests/images/resized.jpg");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     resize(&Path::new("./tests/images/test.jpg"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -239,10 +234,9 @@ fn test_resize_jpg() {
 #[test]
 fn test_resize_jpg_tmp() {
     let dest = Path::new("./tests/images/resized.jpg.tmp");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     resize(&Path::new("./tests/images/test.jpg.tmp"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -259,10 +253,9 @@ fn test_resize_jpg_tmp() {
 #[test]
 fn test_resize_gif() {
     let dest = Path::new("./tests/images/resized.gif");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     resize(&Path::new("./tests/images/test.gif"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
@@ -279,10 +272,9 @@ fn test_resize_gif() {
 #[test]
 fn test_resize_gif_tmp() {
     let dest = Path::new("./tests/images/resized.gif.tmp");
-    match dest.exists() {
-        true => remove_file(&dest).unwrap(),
-        false => {}
-    };
+    if dest.exists() {
+        remove_file(&dest).unwrap();
+    }
     resize(&Path::new("./tests/images/test.gif.tmp"), 200, 200, &dest).unwrap();
     let inf = info(&dest).unwrap();
     assert_eq!(inf,
