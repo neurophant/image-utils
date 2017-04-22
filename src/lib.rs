@@ -11,10 +11,11 @@
 //! let path = Path::new("test.jpg");
 //!
 //! let inf = info(&path)?;
-//! let cropped = crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"))?;
-//! let resized = resize(&path, 200, 200, &Path::new("resized.jpg"))?;
+//! println!("{:?}", inf);
 //!
-//! println!("{:?} {:?} {:?}", inf, cropped, resized);
+//! crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"))?;
+//! resize(&path, 200, 200, &Path::new("resized.jpg"))?;
+//!
 //! ```
 
 #![deny(missing_docs)]

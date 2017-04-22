@@ -36,8 +36,7 @@ use std::path::Path;
 use image_utils::crop;
 
 fn main() {
-    let success = crop(&Path::new("test.jpg"), 10, 10, 100, 100, &Path::new("cropped.jpg")).unwrap();
-    println!("{:?}", success);
+    crop(&Path::new("test.jpg"), 10, 10, 100, 100, &Path::new("cropped.jpg")).unwrap();
 }
 ```
 
@@ -50,8 +49,7 @@ use std::path::Path;
 use image_utils::resize;
 
 fn main() {
-    let success = resize(&Path::new("test.jpg"), 200, 200, &Path::new("resized.jpg")).unwrap();
-    println!("{:?}", success);
+    resize(&Path::new("test.jpg"), 200, 200, &Path::new("resized.jpg")).unwrap();
 }
 ```
 
