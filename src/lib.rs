@@ -28,8 +28,8 @@ use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-use image::{GenericImage, ImageFormat, ColorType, ImageRgba8, ImageBuffer, FilterType,
-            guess_format};
+use image::{GenericImage, DynamicImage, ImageFormat, ColorType, ImageRgba8, ImageBuffer,
+            FilterType, guess_format};
 use gif::{Decoder, SetParameter, ColorOutput, Frame, Encoder, Repeat};
 use gif_dispose::Screen;
 
@@ -88,6 +88,18 @@ pub fn info(path: &Path) -> Result<Info, Box<Error>> {
     })
 }
 
+fn compose(screen: &Screen, width: u32, height: u32) -> Result<DynamicImage, Box<Error>> {
+    let mut buf: Vec<u8> = Vec::new();
+    for pixel in screen.pixels.iter() {
+        buf.push(pixel.r);
+        buf.push(pixel.g);
+        buf.push(pixel.b);
+        buf.push(pixel.a);
+    }
+
+    Ok(ImageRgba8(ImageBuffer::from_raw(width, height, buf).unwrap()))
+}
+
 /// Crops image, panics if passed coordinates or cropped image size are out of bounds of existing
 /// image
 ///
@@ -127,15 +139,7 @@ pub fn crop(src: &Path,
 
             while let Some(frame) = reader.read_next_frame().unwrap() {
                 screen.blit(&frame)?;
-                let mut buf: Vec<u8> = Vec::new();
-                for pixel in screen.pixels.iter() {
-                    buf.push(pixel.r);
-                    buf.push(pixel.g);
-                    buf.push(pixel.b);
-                    buf.push(pixel.a);
-                }
-                let mut im = ImageRgba8(ImageBuffer::from_raw(inf.width, inf.height, buf).unwrap());
-
+                let mut im = compose(&screen, inf.width, inf.height)?;
                 im = im.crop(x, y, width, height);
                 let mut pixels = im.raw_pixels();
                 let mut output = Frame::from_rgba(width as u16, height as u16, &mut *pixels);
@@ -188,15 +192,7 @@ pub fn resize(src: &Path, width: u32, height: u32, dest: &Path) -> Result<(), Bo
 
             while let Some(frame) = reader.read_next_frame().unwrap() {
                 screen.blit(&frame)?;
-                let mut buf: Vec<u8> = Vec::new();
-                for pixel in screen.pixels.iter() {
-                    buf.push(pixel.r);
-                    buf.push(pixel.g);
-                    buf.push(pixel.b);
-                    buf.push(pixel.a);
-                }
-                let mut im = ImageRgba8(ImageBuffer::from_raw(inf.width, inf.height, buf).unwrap());
-
+                let mut im = compose(&screen, inf.width, inf.height)?;
                 im = im.resize(width, height, FilterType::Lanczos3);
                 let mut pixels = im.raw_pixels();
                 let mut output = Frame::from_rgba(nwidth as u16, nheight as u16, &mut *pixels);
