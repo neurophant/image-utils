@@ -15,7 +15,6 @@
 //!
 //! crop(&path, 10, 10, 100, 100, &Path::new("cropped.jpg"))?;
 //! resize(&path, 200, 200, &Path::new("resized.jpg"))?;
-//!
 //! ```
 
 #![deny(missing_docs)]
